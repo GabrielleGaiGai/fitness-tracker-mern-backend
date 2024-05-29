@@ -10,7 +10,7 @@ const getParameter = async (name) => {
 
     try {
         const result = await ssm.getParameter(params).promise();
-        return result.Parameter.Value;;
+        return result.Parameter.Value;
     } catch (err) {
         console.log(err);
     }

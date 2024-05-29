@@ -1,6 +1,5 @@
 const jwt = require('jsonwebtoken')
 const asyncHandler = require('express-async-handler')
-const getParam = require('../config/getParam')
 
 const verifyJWT = asyncHandler(async (req, res, next) => {
     const authHeader = req.headers.authorization || req.headers.Authorization
@@ -11,8 +10,7 @@ const verifyJWT = asyncHandler(async (req, res, next) => {
 
     const token = authHeader.split(' ')[1]
 
-    const ACCESS_TOKEN_SECRET = await getParam.getParameter("ACCESS_TOKEN_SECRET");
-    jwt.verify(token, ACCESS_TOKEN_SECRET,
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET,
         (err, decoded) => {
             if (err) return res.status(403).json({ message: 'Forbidden' + err, })
             req.user = decoded.User.username

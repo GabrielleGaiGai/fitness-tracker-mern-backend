@@ -2,8 +2,6 @@ const User = require('../models/User')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const asyncHandler = require('express-async-handler')
-const getParam = require('../config/getParam')
-
 
 const register = asyncHandler(async (req, res) => {
     const { username, password, firstname, lastname, roles, birthday, height, weight } = req.body
@@ -24,20 +22,17 @@ const register = asyncHandler(async (req, res) => {
     const userObject = { username, firstname, lastname, roles, birthday, height, weight, "password": hashedPwd }
     const user = await User.create(userObject)
 
-    const ACCESS_TOKEN_SECRET = await getParam.getParameter("ACCESS_TOKEN_SECRET");
-    const REFRESH_TOKEN_SECRET = await getParam.getParameter("REFRESH_TOKEN_SECRET");
-
     if (user) {
         // generate tokens
         const accessToken = jwt.sign(
             { "User": { "username": user.username, "roles": user.roles, "userId": user._id } },
-            ACCESS_TOKEN_SECRET,
+            process.env.ACCESS_TOKEN_SECRET,
             { expiresIn: '6h' }
         )
 
         const refreshToken = jwt.sign(
             { "username": user.username },
-            REFRESH_TOKEN_SECRET,
+            process.env.REFRESH_TOKEN_SECRET,
             { expiresIn: '7d' }
         )
 
@@ -65,18 +60,15 @@ const login = asyncHandler(async (req, res) => {
     const match = await bcrypt.compare(password, foundUser.password)
     if (!match) return res.status(401).json({ message: 'Incorrect Password' })
 
-    const ACCESS_TOKEN_SECRET = await getParam.getParameter("ACCESS_TOKEN_SECRET");
-    const REFRESH_TOKEN_SECRET = await getParam.getParameter("REFRESH_TOKEN_SECRET");
-
     const accessToken = jwt.sign(
         { "User": { "username": foundUser.username, "roles": foundUser.roles, "userId": foundUser._id } },
-        ACCESS_TOKEN_SECRET,
+        process.env.ACCESS_TOKEN_SECRET,
         { expiresIn: '6h' }
     )
 
     const refreshToken = jwt.sign(
         { "username": foundUser.username },
-        REFRESH_TOKEN_SECRET,
+        process.env.REFRESH_TOKEN_SECRET,
         { expiresIn: '7d' }
     )
 
@@ -90,11 +82,8 @@ const refresh = asyncHandler(async (req, res) => {
 
     if (!cookies?.jwt) return res.status(401).json({ message: 'Session end' })
 
-    const ACCESS_TOKEN_SECRET = await getParam.getParameter("ACCESS_TOKEN_SECRET");
-    const REFRESH_TOKEN_SECRET = await getParam.getParameter("REFRESH_TOKEN_SECRET");
-
     const refreshToken = cookies.jwt
-    jwt.verify(refreshToken, REFRESH_TOKEN_SECRET, asyncHandler(async (err, decoded) => {
+    jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, asyncHandler(async (err, decoded) => {
         if (err) return res.status(403).json({ message: 'Forbidden' })
 
         const foundUser = await User.findOne({ username: decoded.username }).exec()
@@ -102,7 +91,7 @@ const refresh = asyncHandler(async (req, res) => {
 
         const accessToken = jwt.sign(
             { "User": { "username": foundUser.username, "roles": foundUser.roles, "userId": foundUser._id } },
-            ACCESS_TOKEN_SECRET,
+            process.env.ACCESS_TOKEN_SECRET,
             { expiresIn: '6h' }
         )
 
