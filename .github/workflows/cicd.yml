@@ -28,8 +28,8 @@ jobs:
         run: docker pull gabriellelu/fitness-tracker-backend:latest
       - name: Delete old container
         run: docker rm -f nodejs-app-container
-      - name: Run Docker Container
-        run: docker run -d -p 8080:8080 --name nodejs-app-container -e gabriellelu/fitness-tracker-backend
+      - name: Run Docker Container 
+        run: docker run -d -p 8080:8080 --name nodejs-app-container gabriellelu/fitness-tracker-backend
 
 
 
