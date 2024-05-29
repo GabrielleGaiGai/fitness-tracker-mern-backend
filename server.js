@@ -8,19 +8,19 @@ const { logger, logEvents } = require('./middlewares/logger')
 const { errorHandler } = require('./middlewares/errorHandler')
 const connectDB = require('./config/dbConn')
 const mongoose = require('mongoose')
-const PORT = process.env.PORT || 3500
+const PORT = process.env.PORT || 8080
 
 connectDB()
 
 app.use(logger)
 
 const allowedOrigins = [
-    "https://fitness-tracker-mern-frontend.onrender.com",
-    // "http://localhost:3000"
+    // "https://fitness-tracker-mern-frontend.onrender.com",
+    "http://localhost:3000",
 ];
 app.use(cors({
     origin: (origin, callback) => {
-        console.log(origin)
+        console.log(origin, allowedOrigins)
         if (!origin || allowedOrigins.indexOf(origin) !== -1) {
             callback(null, true);
         } else {
