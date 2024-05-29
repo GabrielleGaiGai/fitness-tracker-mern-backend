@@ -28,7 +28,7 @@ const register = asyncHandler(async (req, res) => {
         const accessToken = jwt.sign(
             { "User": { "username": user.username, "roles": user.roles, "userId": user._id } },
             process.env.ACCESS_TOKEN_SECRET,
-            { expiresIn: '5s' }
+            { expiresIn: '15m' }
         )
 
         const refreshToken = jwt.sign(
@@ -64,7 +64,7 @@ const login = asyncHandler(async (req, res) => {
     const accessToken = jwt.sign(
         { "User": { "username": foundUser.username, "roles": foundUser.roles, "userId": foundUser._id } },
         process.env.ACCESS_TOKEN_SECRET,
-        { expiresIn: '5s' }
+        { expiresIn: '15m' }
     )
 
     const refreshToken = jwt.sign(
